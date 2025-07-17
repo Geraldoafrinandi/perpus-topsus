@@ -41,7 +41,7 @@
         <p>Maaf, tidak ada buku yang cocok dengan kriteria Anda.</p>
       </div>
 
-      <!-- PAGINATION  -->
+
       <div v-if="totalPages > 1" class="pagination-controls">
         <button @click="prevPage" :disabled="currentPage === 1" class="pagination-button nav-button">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -73,6 +73,7 @@
 
 
 <script>
+import axios from 'axios';
 export default {
   name: 'AllBooks',
   data() {
@@ -83,34 +84,42 @@ export default {
       currentPage: 1,
       categories: [
         { text: 'Semua', value: 'all' },
-        { text: 'Fiksi', value: 'Fiksi' },
-        { text: 'Edukasi', value: 'Edukasi' },
-        { text: 'Biografi', value: 'Biografi' },
-        { text: 'Sastra', value: 'Sastra' },
+        { text: 'Novel Remaja', value: 'Novel Remaja' },
+        { text: 'Komik', value: 'Komik' },
+        { text: 'Cerita Rakyat', value: 'Cerita Rakyat' },
+        { text: 'Buku Islami Populer', value: 'Buku Islami Populer' },
+        { text: 'Buku Motivasi', value: 'Buku Motivasi' },
       ],
-      allBooks: [
-        { id: 1, title: 'Laskar Pelangi', author: 'Andrea Hirata', category: 'Fiksi', cover: 'https://upload.wikimedia.org/wikipedia/id/1/17/Laskar_Pelangi_film.jpg' },
-        { id: 2, title: 'Bumi Manusia', author: 'Pramoedya Ananta Toer', category: 'Sastra', cover: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1565658920i/1398034.jpg' },
-        { id: 3, title: 'Negeri 5 Menara', author: 'Ahmad Fuadi', category: 'Fiksi', cover: 'https://s3-ap-southeast-1.amazonaws.com/ebook-previews/1682/10530/1.jpg' },
-        { id: 4, title: 'Cantik Itu Luka', author: 'Eka Kurniawan', category: 'Sastra', cover: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-no59aLBrpCBiGi0gOrkg7f-krxxu9m6qKQ&s' },
-        { id: 5, title: 'Perahu Kertas', author: 'Dee Lestari', category: 'Fiksi', cover: 'https://cdn.gramedia.com/uploads/items/ID_MIZ2016MTH03PKER_C.jpg' },
-        { id: 6, title: 'Sebuah Seni untuk Bersikap Bodo Amat', author: 'Mark Manson', category: 'Edukasi', cover: 'https://upload.wikimedia.org/wikipedia/commons/4/4b/Sebuah-seni-untuk-bersikap-bodoh-amat.jpg' },
-        { id: 7, title: 'Habibie & Ainun', author: 'B.J. Habibie', category: 'Biografi', cover: 'https://upload.wikimedia.org/wikipedia/id/7/74/Habibie_Ainun_Poster.jpg' },
-        { id: 8, title: 'Filosofi Teras', author: 'Henry Manampiring', category: 'Edukasi', cover: 'https://ebooks.gramedia.com/ebook-covers/45496/image_highres/ID_FITE2018MTH12.jpg' },
-        { id: 9, title: 'Gadis Kretek', author: 'Ratih Kumala', category: 'Sastra', cover: 'https://ebooks.gramedia.com/ebook-covers/6634/image_highres/GPU_GKRE2019MTH07GK.jpg' },
-        { id: 10, title: 'Sapiens: Riwayat Singkat Umat Manusia', author: 'Yuval Noah Harari', category: 'Edukasi', cover: 'https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1420585954l/23692271.jpg' },
-        { id: 11, title: 'Hujan', author: 'Tere Liye', category: 'Fiksi', cover: 'https://www.gramedia.com/blog/content/images/2025/01/Hujan.png' },
-        { id: 12, title: 'Steve Jobs', author: 'Walter Isaacson', category: 'Biografi', cover: 'https://tirtabuanamedia.co.id/wp-content/uploads/2023/05/STEVE-JOBS-THE-GEEK-MASTER-MIND.jpg' },
-      ]
+      allBooks: []
     };
+  },
+  mounted() {
+
+    axios.get('http://localhost:3000/api/buku')
+      .then(response => {
+        this.allBooks = response.data.map(buku => ({
+          id: buku.id_buku || buku.id,
+          title: buku.judul || buku.title,
+          author: buku.penulis || buku.author,
+          category: buku.category || buku.Kategori?.nama_kategori || '',
+          cover: buku.cover || buku.images || ''
+        }));
+      })
+      .catch(error => {
+        console.error('Gagal mengambil data buku:', error);
+      });
   },
   computed: {
     filteredBooks() {
       if (!this.allBooks) return [];
       let books = this.allBooks;
+
       if (this.selectedCategory !== 'all') {
-        books = books.filter(book => book.category === this.selectedCategory);
+        books = books.filter(book =>
+          book.category.toLowerCase().includes(this.selectedCategory.toLowerCase())
+        );
       }
+
       if (this.searchQuery.trim() !== '') {
         const query = this.searchQuery.toLowerCase().trim();
         books = books.filter(book =>
@@ -118,8 +127,10 @@ export default {
           book.author.toLowerCase().includes(query)
         );
       }
+
       return books;
     },
+
     totalPages() {
       return Math.ceil(this.filteredBooks.length / this.itemsPerPage);
     },

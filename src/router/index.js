@@ -5,6 +5,9 @@ import HomePage from '../views/HomePage.vue'
 import AboutPage from '../views/AboutPage.vue'
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
+import BookDetail from '../views/BookDetail.vue'
+import ReceiptPage from '../components/Receipt.vue'
+import RiwayatPeminjaman from '@/components/RiwayatPeminjaman.vue'
 
 const routes = [
   {
@@ -34,9 +37,23 @@ const routes = [
     name: 'register',
     component: RegisterPage
   },
+  {
+    path: '/buku/:id', 
+    name: 'BookDetail',
+    component: BookDetail
+  },
+  {
+    path: '/pinjam/sukses', 
+    name: 'receipt',
+    component: ReceiptPage
+  },
+  {
+    path: '/riwayat', 
+    name: 'riwayat',
+    component: RiwayatPeminjaman
+  }
+  
 
-
- 
 ]
 
 const router = createRouter({
