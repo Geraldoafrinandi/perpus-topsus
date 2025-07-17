@@ -28,7 +28,7 @@
         </form>
 
         <p class="signup-link">
-          Belum punya akun? <router-link to="/daftar">Daftar di sini</router-link>
+          Belum punya akun? <router-link to="/register">Daftar di sini</router-link>
         </p>
       </div>
     </div>

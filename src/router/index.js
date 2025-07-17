@@ -4,6 +4,7 @@ import AllBooks from '../views/allbooks.vue'
 import HomePage from '../views/HomePage.vue'
 import AboutPage from '../views/AboutPage.vue'
 import LoginPage from '../views/LoginPage.vue'
+import RegisterPage from '../views/RegisterPage.vue'
 
 const routes = [
   {
@@ -27,6 +28,11 @@ const routes = [
     path: '/login', 
     name: 'login',
     component: LoginPage
+  },
+  {
+    path: '/register', 
+    name: 'register',
+    component: RegisterPage
   },
 
 
